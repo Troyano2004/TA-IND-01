@@ -1,0 +1,11 @@
+Nombres que deben usar las capturas (en esta carpeta):
+
+cap1_nodos.png           -> Script 01, CAPTURA 1: node status con los 3 nodos vivos, usuario y fecha
+cap2_rangos.png          -> Script 01, CAPTURA 2: SHOW RANGES con replicas y leaseholder
+cap3_panel.png           -> Script 01, CAPTURA 3: panel web (localhost:8080) con el reloj de Windows visible
+cap4_un_nodo_caido.png   -> Script 02, CAPTURA 4: INSERT y SELECT funcionando con roach3 detenido
+cap5_sin_quorum.png      -> Script 02, CAPTURA 5: consulta que falla por falta de quorum (timeout)
+cap6_recuperacion.png    -> Script 02, CAPTURA 6: nodos recuperados y fila 3 visible desde roach3
+cap7_latencias.png       -> Script 03, CAPTURA 7: tabla de promedios lectura consistente vs historica
+
+En cada captura debe verse la linea con whoami, hostname y fecha que imprime el script.
