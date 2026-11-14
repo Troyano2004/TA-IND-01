@@ -1,3 +1,84 @@
 % Referencias en formato IEEE (biblatex + biber).
-% Mínimo 6, de 2021 en adelante; al menos 3 artículos de revista con DOI.
-% Abrir cada DOI y comprobar autores, año, título, revista, volumen, número y páginas.
+% Todas verificadas contra Crossref (api.crossref.org) el 14/11/2026:
+% autores, año, título, revista/actas, volumen, número, páginas y DOI.
+% Antes de entregar: abrir cada https://doi.org/<DOI> y confirmar.
+
+% ---------- Artículos de revista (4) ----------
+
+@article{pina2023newsql,
+  author       = {Pina, Eduardo and S{\'a}, Filipe and Bernardino, Jorge},
+  title        = {{NewSQL} Databases Assessment: {CockroachDB}, {MariaDB Xpand}, and {VoltDB}},
+  journaltitle = {Future Internet},
+  volume       = {15},
+  number       = {1},
+  eid          = {10},
+  year         = {2023},
+  doi          = {10.3390/fi15010010}
+}
+
+@article{ajmani2022demo,
+  author       = {Ajmani, Arul and Shah, Aayush and Shraer, Alexander and Storm, Adam and Taft, Rebecca and Tan, Oliver and VanBenschoten, Nathan},
+  title        = {A Demonstration of Multi-Region {CockroachDB}},
+  journaltitle = {Proceedings of the VLDB Endowment},
+  volume       = {15},
+  number       = {12},
+  pages        = {3610--3613},
+  year         = {2022},
+  doi          = {10.14778/3554821.3554856}
+}
+
+@article{ahmed2023consistency,
+  author       = {Ahmed, Jaafar and Karpenko, Andrii and Tarasyuk, Olga and Gorbenko, Anatoliy and Sheikh-Akbari, Akbar},
+  title        = {Consistency issue and related trade-offs in distributed replicated systems and databases: a review},
+  journaltitle = {Radioelectronic and Computer Systems},
+  number       = {2},
+  pages        = {171--179},
+  year         = {2023},
+  doi          = {10.32620/reks.2023.2.14}
+}
+
+@article{song2025k2,
+  author       = {Song, Haoze and Wang, Yongqi and Chen, Xusheng and Feng, Hao and Feng, Yazhi and Fang, Xieyun and Cui, Heming and Kong, Linghe},
+  title        = {{K2}: On Optimizing Distributed Transactions in a Multi-Region Data Store with {TrueTime} Clocks},
+  journaltitle = {Proceedings of the VLDB Endowment},
+  volume       = {18},
+  number       = {6},
+  pages        = {1756--1769},
+  year         = {2025},
+  doi          = {10.14778/3725688.3725704}
+}
+
+% ---------- Artículos de congreso (2) ----------
+
+@inproceedings{vanbenschoten2022multiregion,
+  author       = {VanBenschoten, Nathan and Ajmani, Arul and Gartner, Marcus and Matei, Andrei and Shah, Aayush and Sharif, Irfan and Shraer, Alexander and Storm, Adam and Taft, Rebecca and Tan, Oliver and Woods, Andy and Walters, Peyton},
+  title        = {Enabling the Next Generation of Multi-Region Applications with {CockroachDB}},
+  booktitle    = {Proceedings of the 2022 International Conference on Management of Data (SIGMOD '22)},
+  location     = {Philadelphia, PA, USA},
+  publisher    = {ACM},
+  pages        = {2312--2325},
+  year         = {2022},
+  doi          = {10.1145/3514221.3526053}
+}
+
+@inproceedings{swenson2025serverless,
+  author       = {Swenson, Jeff and Kimball, Andy and Poss, Raphael and Taft, Rebecca and Lim, Jay and Storm, Adam and Bhola, Sumeer and Bulkley-Logston, Paul and Tatlow, Pj and Harding, Rachael and Shamim, Rafi and Maru, Aditya and Sharif, Irfan},
+  title        = {{CockroachDB} Serverless: Sub-second Scaling from Zero with Multi-region Cluster Virtualization},
+  booktitle    = {Companion of the 2025 International Conference on Management of Data (SIGMOD-Companion '25)},
+  location     = {Berlin, Germany},
+  publisher    = {ACM},
+  pages        = {648--661},
+  year         = {2025},
+  doi          = {10.1145/3722212.3724432}
+}
+
+% ---------- Fuente periodística (incidente real documentado) ----------
+
+@online{vistazo2025pichincha,
+  author       = {{Redacción Vistazo}},
+  title        = {Aplicación del Banco del Pichincha vuelve a presentar fallas: usuarios no pueden ingresar ni hacer transacciones},
+  organization = {Vistazo},
+  date         = {2025-08-04},
+  url          = {https://www.vistazo.com/actualidad/2025-08-04-aplicacion-banco-pichincha-vuelve-fallas-usuarios-no-pueden-ingresar-ni-hacer-transacciones-FF9878997},
+  urldate      = {2026-11-14}
+}
