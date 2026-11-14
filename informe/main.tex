@@ -1,0 +1,162 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{csquotes}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{referencias.bib}
+
+\graphicspath{{figuras/}{capturas/}{anexos/}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8}
+}
+
+\newcommand{\repourl}{https://github.com/Troyano2004/TA-IND-01}
+
+\begin{document}
+
+% ---------------------------------------------------------------
+% Carátula
+% ---------------------------------------------------------------
+\begin{titlepage}
+  \centering
+  {\large UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO\par}
+  \vspace{0.3cm}
+  {\large Facultad de Ciencias de la Computación y Diseño Digital\par}
+  \vspace{0.3cm}
+  {\large Carrera de Ingeniería de Software\par}
+  \vspace{1.5cm}
+  {\large Asignatura: Sistemas Distribuidos\par}
+  \vspace{0.3cm}
+  {\large Actividad: TA-IND-01\par}
+  \vspace{1.5cm}
+  {\LARGE\bfseries Análisis crítico comparativo de CockroachDB frente a Google Spanner\par}
+  \vfill
+  {\large Estudiante: Erwin Daniel Bueno Troya\par}
+  \vspace{0.3cm}
+  {\large Paralelo: PENDIENTE\par}
+  \vspace{0.3cm}
+  {\large Fecha: PENDIENTE\par}
+  \vspace{0.3cm}
+  {\large Repositorio: \url{\repourl}\par}
+\end{titlepage}
+
+% ---------------------------------------------------------------
+\section*{Resumen}
+% 150 a 200 palabras: sistema analizado, enfoque y conclusiones principales.
+% Escribirlo al final.
+
+\newpage
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------------
+\section{Introducción}
+% Qué problema resuelve CockroachDB, quién lo usa, a qué escala opera
+% y por qué lo elegiste.
+
+% ---------------------------------------------------------------
+\section{Arquitectura del sistema}
+% Componentes (capas SQL, transaccional, distribución, replicación, almacenamiento),
+% cómo se comunican los nodos y diagrama propio hecho en draw.io.
+% Mencionar la evolución desde el bosquejo a mano (Anexo A).
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.9\textwidth]{arquitectura.png}
+%   \caption{Arquitectura de CockroachDB (elaboración propia).}
+%   \label{fig:arquitectura}
+% \end{figure}
+
+% ---------------------------------------------------------------
+\section{Análisis con los conceptos de la Unidad 1}
+
+\subsection{Transparencias de distribución}
+% Acceso, ubicación, migración, reubicación, replicación, concurrencia y fallos:
+% cuáles ofrece, cuáles no y por qué.
+
+\subsection{CAP y PACELC}
+% Qué prioriza con partición de red y qué prioriza sin ella (latencia vs consistencia),
+% con evidencia de documentación o artículos.
+
+\subsection{Modelos de comunicación}
+% Cliente-servidor, P2P o híbrido; sincrónica o asincrónica; sockets, RPC o mensajería.
+
+\subsection{Tolerancia a fallos}
+% Qué fallos soporta, cómo los detecta y cómo se recupera.
+% Al menos un incidente real documentado si existe.
+
+% ---------------------------------------------------------------
+\section{Experimentación propia}
+% Capturas (mínimo 4) y experimento, con comandos, salida e interpretación.
+% Los comandos y salidas completos están en la carpeta experimento/ del repositorio.
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.9\textwidth]{01-estado-inicial.png}
+%   \caption{Estado inicial del clúster de tres nodos.}
+%   \label{fig:estado-inicial}
+% \end{figure}
+
+% ---------------------------------------------------------------
+\section{Ejemplos del entorno del estudiante}
+% Al menos dos sistemas que uses (SGA UTEQ, banca móvil, WhatsApp...):
+% qué observaste como usuario y con qué concepto se relaciona.
+
+% ---------------------------------------------------------------
+\section{Análisis comparativo}
+% Tabla con al menos cinco criterios de la Unidad 1 y su discusión.
+
+\begin{table}[H]
+  \centering
+  \caption{Comparación entre CockroachDB y Google Spanner.}
+  \label{tab:comparacion}
+  \begin{tabular}{p{4cm}p{5cm}p{5cm}}
+    \toprule
+    \textbf{Criterio} & \textbf{CockroachDB} & \textbf{Google Spanner} \\
+    \midrule
+     &  &  \\
+     &  &  \\
+     &  &  \\
+     &  &  \\
+     &  &  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------
+\section{Postura crítica}
+% Fortalezas, limitaciones, trade-offs y contextos donde no sería la mejor opción.
+
+% ---------------------------------------------------------------
+\section{Conclusiones}
+% Afirmaciones concretas derivadas del análisis y del experimento.
+
+% ---------------------------------------------------------------
+\section{Declaración de uso de inteligencia artificial}
+% Herramienta, versión, para qué se usó y cómo se verificó.
+
+% ---------------------------------------------------------------
+\printbibliography[title={Referencias}]
+
+% ---------------------------------------------------------------
+\appendix
+\section{Esquema inicial a mano}
+% Foto del bosquejo con nombre y fecha visibles.
+
+\section{Capturas de lectura de las fuentes}
+% Mínimo 3 capturas de artículos subrayados, con página indicada.
+
+\end{document}
