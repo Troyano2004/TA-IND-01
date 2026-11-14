@@ -1,0 +1,36 @@
+services:
+  roach1:
+    image: cockroachdb/cockroach:latest-v25.4
+    container_name: roach1
+    hostname: roach1
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach1:26257
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    volumes:
+      - roach1-data:/cockroach/cockroach-data
+
+  roach2:
+    image: cockroachdb/cockroach:latest-v25.4
+    container_name: roach2
+    hostname: roach2
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach2:26257
+    ports:
+      - "8081:8080"
+    volumes:
+      - roach2-data:/cockroach/cockroach-data
+
+  roach3:
+    image: cockroachdb/cockroach:latest-v25.4
+    container_name: roach3
+    hostname: roach3
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach3:26257
+    ports:
+      - "8082:8080"
+    volumes:
+      - roach3-data:/cockroach/cockroach-data
+
+volumes:
+  roach1-data:
+  roach2-data:
+  roach3-data:
