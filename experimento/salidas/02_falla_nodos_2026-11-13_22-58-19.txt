@@ -1,0 +1,122 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20261113225819
+Nombre de usuario: RYZEN7\erwin
+Usuario RunAs: RYZEN7\erwin
+Nombre de la configuración: 
+Máquina: RYZEN7 (Microsoft Windows NT 10.0.26300.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 2648
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Salida guardada en: C:\Users\erwin\Documents\TA-IND-01\experimento\salidas\02_falla_nodos_2026-11-13_22-58-19.txt
+
+==== Inicio de 02_falla_nodos
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 22:58:19
+Docker Desktop está corriendo.
+
+==== Paso 1: estado inicial
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 22:58:20
+  id |   address    | sql_address  |  build   |              started_at              |              updated_at              | locality | attrs | is_available | is_live
+-----+--------------+--------------+----------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
+   1 | roach1:26257 | roach1:26257 | v25.4.20 | 2026-11-14 03:49:29.073991 +0000 UTC | 2026-11-14 03:58:20.142499 +0000 UTC |          | []    | true         | true
+   2 | roach3:26257 | roach3:26257 | v25.4.20 | 2026-11-14 03:49:31.314895 +0000 UTC | 2026-11-14 03:58:19.368394 +0000 UTC |          | []    | true         | true
+   3 | roach2:26257 | roach2:26257 | v25.4.20 | 2026-11-14 03:49:31.31983 +0000 UTC  | 2026-11-14 03:58:19.382582 +0000 UTC |          | []    | true         | true
+(3 rows)
+[roach1] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+(2 rows)
+
+==== Paso 2: detener roach3 (queda 2 de 3 nodos: hay quórum)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 22:58:22
+roach3
+Esperando 15 s (el clúster detecta que roach3 no responde)...
+  id |   address    | sql_address  |  build   |              started_at              |              updated_at              | locality | attrs | is_available | is_live
+-----+--------------+--------------+----------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
+   1 | roach1:26257 | roach1:26257 | v25.4.20 | 2026-11-14 03:49:29.073991 +0000 UTC | 2026-11-14 03:58:41.141603 +0000 UTC |          | []    | true         | true
+   2 | roach3:26257 | roach3:26257 | v25.4.20 | 2026-11-14 03:49:31.314895 +0000 UTC | 2026-11-14 03:58:25.386597 +0000 UTC |          | []    | false        | false
+   3 | roach2:26257 | roach2:26257 | v25.4.20 | 2026-11-14 03:49:31.31983 +0000 UTC  | 2026-11-14 03:58:40.375751 +0000 UTC |          | []    | true         | true
+(3 rows)
+[roach1] > INSERT INTO banco.cuentas VALUES (3, 'Con un nodo caido', 100) ON CONFLICT (id) DO NOTHING;
+INSERT 0 1
+[roach1] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+   3 | Con un nodo caido  |   100
+(3 rows)
+
+==== Punto de captura 4
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 22:58:45
+CAPTURA 4: roach3 aparece no vivo, pero el INSERT de la fila 3 y el SELECT funcionan con 2 de 3 nodos
+
+==== Paso 3: detener roach2 (queda 1 de 3 nodos: sin quórum)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:00:15
+roach2
+Esperando 10 s (vence el lease del nodo que queda)...
+[roach1] > SET statement_timeout = '10s'; SELECT * FROM banco.cuentas ORDER BY id;
+SET
+ERROR: query execution canceled due to statement timeout
+SQLSTATE: 57014
+Failed running "sql"
+Tiempo de la consulta: 11,2 s (código de salida 1)
+La consulta NO se respondió: con 1 de 3 réplicas no hay mayoría (quórum) y el sistema prefiere no responder antes que dar datos inconsistentes (CP).
+
+==== Punto de captura 5
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:00:43
+CAPTURA 5: la consulta falla por timeout (~10 s) porque no hay quórum
+
+==== Paso 4: recuperar roach2 y roach3
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:01:46
+roach2
+roach3
+Esperando 20 s (los nodos vuelven y se ponen al día con el log de Raft)...
+  id |   address    | sql_address  |  build   |              started_at              |              updated_at              | locality | attrs | is_available | is_live
+-----+--------------+--------------+----------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
+   1 | roach1:26257 | roach1:26257 | v25.4.20 | 2026-11-14 03:49:29.073991 +0000 UTC | 2026-11-14 04:02:08.142146 +0000 UTC |          | []    | true         | true
+   2 | roach3:26257 | roach3:26257 | v25.4.20 | 2026-11-14 04:01:50.247703 +0000 UTC | 2026-11-14 04:02:08.329194 +0000 UTC |          | []    | true         | true
+   3 | roach2:26257 | roach2:26257 | v25.4.20 | 2026-11-14 04:01:49.95636 +0000 UTC  | 2026-11-14 04:02:08.021364 +0000 UTC |          | []    | true         | true
+(3 rows)
+[roach1] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+   3 | Con un nodo caido  |   100
+(3 rows)
+[roach2] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+   3 | Con un nodo caido  |   100
+(3 rows)
+[roach3] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+   3 | Con un nodo caido  |   100
+(3 rows)
+
+==== Punto de captura 6
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:02:12
+CAPTURA 6: los 3 nodos vivos y la fila 3 visible también al consultar desde roach3
+
+==== Fin del script
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:03:17
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20261113230317
+**********************

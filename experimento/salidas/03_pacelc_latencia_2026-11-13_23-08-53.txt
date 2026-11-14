@@ -1,0 +1,110 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20261113230853
+Nombre de usuario: RYZEN7\erwin
+Usuario RunAs: RYZEN7\erwin
+Nombre de la configuración: 
+Máquina: RYZEN7 (Microsoft Windows NT 10.0.26300.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 5612
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Salida guardada en: C:\Users\erwin\Documents\TA-IND-01\experimento\salidas\03_pacelc_latencia_2026-11-13_23-08-53.txt
+
+==== Inicio de 03_pacelc_latencia
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:53
+Docker Desktop está corriendo.
+
+==== Paso 1: dejar el saldo de la cuenta 1 en 500 (valor de partida conocido)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:54
+[roach1] > UPDATE banco.cuentas SET saldo = 500 WHERE id = 1;
+UPDATE 1
+Esperando 6 s (para que la lectura histórica de -5 s ya vea el saldo 500)...
+
+==== Intento 1 de 5: sesión A abre la transacción en segundo plano
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:09:01
+Sesión A: BEGIN; UPDATE banco.cuentas SET saldo = saldo - 100 WHERE id = 1; SELECT pg_sleep(8); COMMIT;
+Sesión A ya actualizó la fila 1 y está en pg_sleep(8): transacción abierta, sin COMMIT.
+  historica       932 ms   saldo leído = 500
+  consistente    6196 ms   saldo leído = 400
+Esperando 6 s (separar intentos para que -5 s no se mezcle con el intento anterior)...
+
+==== Intento 2 de 5: sesión A abre la transacción en segundo plano
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:09:18
+Sesión A: BEGIN; UPDATE banco.cuentas SET saldo = saldo - 100 WHERE id = 1; SELECT pg_sleep(8); COMMIT;
+Sesión A ya actualizó la fila 1 y está en pg_sleep(8): transacción abierta, sin COMMIT.
+  historica       888 ms   saldo leído = 400
+  consistente    6265 ms   saldo leído = 300
+Esperando 6 s (separar intentos para que -5 s no se mezcle con el intento anterior)...
+
+==== Intento 3 de 5: sesión A abre la transacción en segundo plano
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:09:34
+Sesión A: BEGIN; UPDATE banco.cuentas SET saldo = saldo - 100 WHERE id = 1; SELECT pg_sleep(8); COMMIT;
+Sesión A ya actualizó la fila 1 y está en pg_sleep(8): transacción abierta, sin COMMIT.
+  historica       872 ms   saldo leído = 300
+  consistente    6262 ms   saldo leído = 200
+Esperando 6 s (separar intentos para que -5 s no se mezcle con el intento anterior)...
+
+==== Intento 4 de 5: sesión A abre la transacción en segundo plano
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:09:49
+Sesión A: BEGIN; UPDATE banco.cuentas SET saldo = saldo - 100 WHERE id = 1; SELECT pg_sleep(8); COMMIT;
+Sesión A ya actualizó la fila 1 y está en pg_sleep(8): transacción abierta, sin COMMIT.
+  historica       970 ms   saldo leído = 200
+  consistente    6332 ms   saldo leído = 100
+Esperando 6 s (separar intentos para que -5 s no se mezcle con el intento anterior)...
+
+==== Intento 5 de 5: sesión A abre la transacción en segundo plano
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:10:05
+Sesión A: BEGIN; UPDATE banco.cuentas SET saldo = saldo - 100 WHERE id = 1; SELECT pg_sleep(8); COMMIT;
+Sesión A ya actualizó la fila 1 y está en pg_sleep(8): transacción abierta, sin COMMIT.
+  historica       839 ms   saldo leído = 100
+  consistente    6303 ms   saldo leído = 0
+Resultados guardados en C:\Users\erwin\Documents\TA-IND-01\experimento\salidas\latencias.csv
+
+==== Resumen: latencia por tipo de lectura
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:10:14
+
+intento tipo          ms saldo_leido
+------- ----          -- -----------
+      1 historica    932 500
+      1 consistente 6196 400
+      2 historica    888 400
+      2 consistente 6265 300
+      3 historica    872 300
+      3 consistente 6262 200
+      4 historica    970 200
+      4 consistente 6332 100
+      5 historica    839 100
+      5 consistente 6303 0
+
+
+
+tipo        lecturas promedio_ms minimo_ms maximo_ms saldos_leidos
+----        -------- ----------- --------- --------- -------------
+historica          5         900       839       970 500, 400, 300, 200, 100
+consistente        5        6272      6196      6332 400, 300, 200, 100, 0
+
+
+
+==== Punto de captura 7
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:10:15
+CAPTURA 7: la lectura consistente tarda varios segundos (espera el COMMIT) y la histórica responde rápido con el saldo anterior
+
+==== Paso final: restaurar el saldo de la cuenta 1 a 500
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:12:53
+[roach1] > UPDATE banco.cuentas SET saldo = 500 WHERE id = 1;
+UPDATE 1
+
+==== Fin del script
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:12:54
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20261113231254
+**********************

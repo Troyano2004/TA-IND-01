@@ -1,0 +1,129 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20261113230747
+Nombre de usuario: RYZEN7\erwin
+Usuario RunAs: RYZEN7\erwin
+Nombre de la configuración: 
+Máquina: RYZEN7 (Microsoft Windows NT 10.0.26300.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 5612
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Salida guardada en: C:\Users\erwin\Documents\TA-IND-01\experimento\salidas\01_levantar_cluster_2026-11-13_23-07-47.txt
+
+==== Inicio de 01_levantar_cluster
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:07:48
+Docker Desktop está corriendo.
+
+==== Paso 0: liberar los puertos del clúster (26257, 8080, 8081, 8082)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:07:48
+Puertos libres.
+
+==== Paso 1: levantar los 3 contenedores
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:07:48
+ Network ta-ind-01_default Creating
+ Network ta-ind-01_default Creating
+ Network ta-ind-01_default Created
+ Network ta-ind-01_default Created
+ Container roach3 Creating
+ Container roach1 Creating
+ Container roach2 Creating
+ Container roach3 Created
+ Container roach2 Created
+ Container roach1 Created
+ Container roach3 Starting
+ Container roach1 Starting
+ Container roach2 Starting
+ Container roach2 Started
+ Container roach3 Started
+ Container roach1 Started
+Esperando 15 s (arranque de los nodos)...
+
+==== Paso 2: inicializar el clúster
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:05
+ERROR: cluster has already been initialized
+Failed running "init"
+El clúster ya estaba inicializado; se continúa.
+
+==== Paso 3: estado de los nodos
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:07
+  id |   address    | sql_address  |  build   |              started_at              |              updated_at              | locality | attrs | is_available | is_live
+-----+--------------+--------------+----------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
+   1 | roach1:26257 | roach1:26257 | v25.4.20 | 2026-11-14 04:07:52.99894 +0000 UTC  | 2026-11-14 04:08:05.079593 +0000 UTC |          | []    | true         | true
+   2 | roach3:26257 | roach3:26257 | v25.4.20 | 2026-11-14 04:07:52.573341 +0000 UTC | 2026-11-14 04:08:07.648806 +0000 UTC |          | []    | true         | true
+   3 | roach2:26257 | roach2:26257 | v25.4.20 | 2026-11-14 04:07:52.207368 +0000 UTC | 2026-11-14 04:08:07.293369 +0000 UTC |          | []    | true         | true
+(3 rows)
+
+==== Punto de captura 1
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:07
+CAPTURA 1: node status con los 3 nodos (is_available e is_live = true), tu usuario y la fecha
+
+==== Paso 4: crear base banco, tabla cuentas e insertar datos
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:15
+[roach1] > CREATE DATABASE IF NOT EXISTS banco; CREATE TABLE IF NOT EXISTS banco.cuentas (id INT PRIMARY KEY, titular STRING, saldo DECIMAL); INSERT INTO banco.cuentas VALUES (1, 'Daniel Bueno', 500), (2, 'Cuenta prueba UTEQ', 300) ON CONFLICT (id) DO NOTHING;
+CREATE DATABASE
+CREATE TABLE
+INSERT 0 0
+NOTICE: auto-committing transaction before processing DDL due to autocommit_before_ddl setting
+NOTICE: relation "cuentas" already exists, skipping
+[roach1] > SELECT * FROM banco.cuentas ORDER BY id;
+  id |      titular       | saldo
+-----+--------------------+--------
+   1 | Daniel Bueno       |   500
+   2 | Cuenta prueba UTEQ |   300
+   3 | Con un nodo caido  |   100
+(3 rows)
+
+==== Paso 5: esperar a que el rango de la tabla tenga 3 réplicas
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:17
+  23:08:18  réplicas = "{1,2,3}"
+
+==== Paso 6: rangos, réplicas y leaseholder de la tabla
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:18
+[roach1] > SHOW RANGES FROM TABLE banco.cuentas WITH DETAILS;
+-[ RECORD 1 ]
+start_key             | ÔÇª/<TableMin>
+end_key               | <after:/Max>
+range_id              | 79
+range_size_mb         | 0.00013600000000000000000
+lease_holder          | 1
+lease_holder_locality |
+replicas              | {1,2,3}
+replica_localities    | {"","",""}
+voting_replicas       | {1,3,2}
+non_voting_replicas   | {}
+learner_replicas      | {}
+split_enforced_until  | NULL
+range_size            | 136
+span_stats            | {"approximate_disk_bytes": 25839, "intent_bytes": 0, "intent_count": 0, "key_bytes": 51, "key_count": 3, "live_bytes": 136, "live_count": 3, "sys_bytes": 365, "sys_count": 7, "val_bytes": 85, "val_count": 3}
+Resumen (columnas clave):
+[roach1] > SELECT range_id, lease_holder, replicas, voting_replicas FROM [SHOW RANGES FROM TABLE banco.cuentas WITH DETAILS];
+  range_id | lease_holder | replicas | voting_replicas
+-----------+--------------+----------+------------------
+        79 |            1 | {1,2,3}  | {1,3,2}
+(1 row)
+
+==== Punto de captura 2
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:20
+CAPTURA 2: SHOW RANGES: replicas {1,2,3} (3 copias) y el lease_holder del rango
+
+==== Paso 7: abrir el panel web (DB Console)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:22
+
+==== Punto de captura 3
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:22
+CAPTURA 3: panel web en localhost:8080 con los 3 nodos vivos y el reloj de Windows visible
+
+==== Fin del script
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:08:33
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20261113230833
+**********************

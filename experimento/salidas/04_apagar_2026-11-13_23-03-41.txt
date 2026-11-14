@@ -1,0 +1,52 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20261113230341
+Nombre de usuario: RYZEN7\erwin
+Usuario RunAs: RYZEN7\erwin
+Nombre de la configuración: 
+Máquina: RYZEN7 (Microsoft Windows NT 10.0.26300.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 2648
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Salida guardada en: C:\Users\erwin\Documents\TA-IND-01\experimento\salidas\04_apagar_2026-11-13_23-03-41.txt
+
+==== Inicio de 04_apagar
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:03:41
+Docker Desktop está corriendo.
+
+==== Apagar contenedores (docker compose down, sin -v)
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:03:41
+ Container roach3 Stopping
+ Container roach1 Stopping
+ Container roach2 Stopping
+ Container roach3 Stopped
+ Container roach3 Removing
+ Container roach3 Removed
+ Container roach2 Stopped
+ Container roach2 Removing
+ Container roach2 Removed
+ Container roach1 Stopped
+ Container roach1 Removing
+ Container roach1 Removed
+ Network ta-ind-01_default Removing
+ Network ta-ind-01_default Removed
+DRIVER    VOLUME NAME
+local     ta-ind-01_roach1-data
+local     ta-ind-01_roach2-data
+local     ta-ind-01_roach3-data
+Los volúmenes siguen existiendo: al volver a correr 01 los datos estarán ahí.
+
+==== Fin del script
+Usuario: ryzen7\erwin | Equipo: Ryzen7 | Fecha: 2026-11-13 23:03:46
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20261113230346
+**********************
