@@ -1,0 +1,80 @@
+% Diagrama de arquitectura de CockroachDB (clúster local de 3 nodos)
+% Elaboración propia a partir del bosquejo a mano (Anexo A).
+% Requiere en el preámbulo:
+%   \usepackage{tikz}
+%   \usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  >=Stealth,
+  capa/.style={draw, fill=white, minimum width=3.2cm, minimum height=0.55cm, inner sep=2pt, font=\sffamily\scriptsize},
+  nodo/.style={draw, thick, rounded corners=3pt, fill=gray!8, inner sep=6pt},
+  cliente/.style={draw, thick, rounded corners=3pt, fill=blue!8, minimum width=4.5cm, minimum height=0.9cm, align=center},
+  nota/.style={font=\sffamily\scriptsize, align=center}
+]
+
+% ---------- Nodo 1: roach1 (gateway) ----------
+\node[capa] (sql1) {Capa SQL (gateway)};
+\node[capa, below=0pt of sql1] (tx1) {Capa transaccional};
+\node[capa, below=0pt of tx1] (dist1) {Capa de distribución};
+\node[capa, below=0pt of dist1, fill=green!10] (rep1) {Réplica r78 (seguidora)};
+\node[capa, below=0pt of rep1] (alm1) {Almacenamiento (Pebble)};
+\node[above=2pt of sql1, font=\sffamily\bfseries] (t1) {roach1 \textmd{(n1)}};
+\begin{scope}[on background layer]
+  \node[nodo, fit=(t1)(sql1)(alm1)] (N1) {};
+\end{scope}
+
+% ---------- Nodo 3: roach2 (leaseholder) ----------
+\node[capa, right=2.3cm of sql1] (sql2) {Capa SQL};
+\node[capa, below=0pt of sql2] (tx2) {Capa transaccional};
+\node[capa, below=0pt of tx2] (dist2) {Capa de distribución};
+\node[capa, below=0pt of dist2, fill=orange!25] (rep2) {Réplica r78 \textbf{$\bigstar$ leaseholder}};
+\node[capa, below=0pt of rep2] (alm2) {Almacenamiento (Pebble)};
+\node[above=2pt of sql2, font=\sffamily\bfseries] (t2) {roach2 \textmd{(n3)}};
+\begin{scope}[on background layer]
+  \node[nodo, fit=(t2)(sql2)(alm2)] (N2) {};
+\end{scope}
+
+% ---------- Nodo 2: roach3 ----------
+\node[capa, right=2.3cm of sql2] (sql3) {Capa SQL};
+\node[capa, below=0pt of sql3] (tx3) {Capa transaccional};
+\node[capa, below=0pt of tx3] (dist3) {Capa de distribución};
+\node[capa, below=0pt of dist3, fill=green!10] (rep3) {Réplica r78 (seguidora)};
+\node[capa, below=0pt of rep3] (alm3) {Almacenamiento (Pebble)};
+\node[above=2pt of sql3, font=\sffamily\bfseries] (t3) {roach3 \textmd{(n2)}};
+\begin{scope}[on background layer]
+  \node[nodo, fit=(t3)(sql3)(alm3)] (N3) {};
+\end{scope}
+
+% ---------- Cliente ----------
+\node[cliente, above=1.4cm of N1.north west, anchor=south west] (cli)
+  {Cliente SQL\\[-1pt]{\scriptsize\texttt{cockroach sql} / aplicación}};
+
+% Petición del cliente al gateway
+\draw[->, thick] (cli.south -| N1.north) -- node[left, nota] {SQL (protocolo\\PostgreSQL)\\puerto 26257} (N1.north);
+
+% Panel web
+\node[cliente, fill=gray!5, right=1.2cm of cli] (ui) {Panel web (DB Console)\\[-1pt]{\scriptsize puertos 8080 / 8081 / 8082}};
+\draw[->, dashed] (ui.south) -- ($(N2.north)+(0,0)$) node[pos=0.45, right, nota] {HTTP};
+
+% Gateway reenvía al leaseholder (RPC)
+\draw[->, thick, blue!70!black] (dist1.east) -- node[above, nota] {gRPC: reenvía\\al leaseholder} (dist2.west);
+
+% Raft entre réplicas
+\draw[<->, thick, orange!70!black] (rep2.east) -- node[above, nota, pos=0.5] {Raft} (rep3.west);
+\draw[<->, thick, orange!70!black] (rep1.east) -- node[below, nota] {Raft} (rep2.west);
+
+% Gossip entre todos los nodos
+\draw[<->, densely dotted] ($(N1.south)+(0,-0.1)$) -- ++(0,-0.6) -| node[pos=0.25, below, nota] {Gossip: estado del clúster, ubicación de rangos y salud de nodos} ($(N3.south)+(0,-0.1)$);
+\draw[densely dotted] ($(N2.south)+(0,-0.1)$) -- ++(0,-0.6);
+
+% Red Docker
+\coordinate (gbot) at ($(N1.south)+(0,-1.4)$);
+\begin{scope}[on background layer]
+  \node[draw, dashed, rounded corners=6pt, inner sep=10pt, fit=(N1)(N2)(N3)(gbot),
+        label={[anchor=south east, font=\sffamily\scriptsize]north east:Red interna de Docker Compose}] (red) {};
+\end{scope}
+
+% Nota de quórum
+\node[nota, below=0.25cm of red, text width=14cm] {Rango r78 (\texttt{banco.cuentas}): 3 réplicas $\{1,2,3\}$. Una escritura se confirma cuando 2 de 3 réplicas la aceptan (quórum de Raft). Con 1 nodo caído el rango sigue disponible; con 2 caídos se detiene.};
+
+\end{tikzpicture}
